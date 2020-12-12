@@ -26,7 +26,7 @@ var boolScene3 = false;
 var boolScene5 = false;
 var boolScene6 = false;
 var boolScene8 = false;
-var boolScene9 = true;
+var boolScene9 = false;
 
 // GUI SCENE 1
 var alphaVehicule = 0;
