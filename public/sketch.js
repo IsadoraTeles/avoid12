@@ -1333,7 +1333,7 @@ function goFlock() {
         vehGraphics.fill(255);
         vehGraphics.noStroke();
         vehGraphics.rect(vehicules[i].position.x, vehicules[i].position.y, 1, 5);
-        if (i > 99) { createVeh = false };
+        if (i >= 99) { createVeh = false };
     }
 
     for (var i = 0; i < vehicules.length; i++) {
