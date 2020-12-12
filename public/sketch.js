@@ -19,6 +19,8 @@ var guiScene6;
 var guiScene8;
 var guiScene9;
 
+var guiVolume;
+
 // SCENES 
 var boolScene1 = false;
 var boolScene2 = false;
@@ -26,7 +28,7 @@ var boolScene3 = false;
 var boolScene5 = false;
 var boolScene6 = false;
 var boolScene8 = false;
-var boolScene9 = false;
+var boolScene9 = true;
 
 // GUI SCENE 1
 var alphaVehicule = 0;
@@ -116,6 +118,11 @@ var cohesionMax = 100;
 var cohesionMin = 1;
 var cohesionStep = 1;
 
+var vol = 0;
+var volMax = 1;
+var volMin = 0;
+var volStep = 0.01;
+
 let vehicules = [];
 let createVeh = true;
 
@@ -135,9 +142,9 @@ let clientsGraphics;
 var capture;
 var scapture;
 var evoCapture;
-var vScale = 32;
-var vScaleEVO = 56;
-var kkk = 20;
+var vScale = 16;
+var vScaleEVO = 32;
+var kkk = 0;
 
 var previousPixels;
 var flow;
@@ -176,11 +183,13 @@ var poison = [];
 
 var drawFood = false;
 
+
+
 function preload() {
     // Load a sound file
-    song1 = loadSound('assets/rach.mp3');
-    song2 = loadSound('assets/it.mp3');
-    whiteNoise = loadSound('assets/wn.mp3');
+    song1 = loadSound('assets/rach_1.mp3');
+    song2 = loadSound('assets/taille_1.mp3');
+    whiteNoise = loadSound('assets/wn_1.mp3');
     whiteNoise2 = loadSound('assets/wn2.mp3');
     theShader = loadShader('shaders/shader.vert', 'shaders/test_frac_motion.frag');
 
@@ -398,7 +407,12 @@ function socketOnMessages() {
             alphaVideo = data.alphaVideo;
             playWhiteNoiseSound = data.playWhiteNoiseSound;
             playSound2 = data.playSound2;
+            drawFood = data.drawFood;
         });
+
+        // socket.on('volume', (data) => {
+        //     vol = data.vol;
+        // });
 
     }
 
@@ -447,6 +461,14 @@ function socketOnMessages() {
 
 function emitMessage() {
 
+    // if (isHost) {
+    //     var data = {
+    //         vol: vol
+    //     }
+
+    //     socket.emit('volume', data);
+    // }
+
     if (isHost && boolScene1) {
         var data = {
             boolScene1: boolScene1,
@@ -456,6 +478,7 @@ function emitMessage() {
             boolScene6: boolScene6,
             boolScene8: boolScene8,
             boolScene9: boolScene9,
+            vol: vol,
             alphaVehicule: alphaVehicule,
             alphaBackgroundVehicule: alphaBackgroundVehicule,
             maxSp: maxSp,
@@ -476,6 +499,7 @@ function emitMessage() {
             boolScene6: boolScene6,
             boolScene8: boolScene8,
             boolScene9: boolScene9,
+            vol: vol,
             alphaVehicule: alphaVehicule,
             alphaPath: alphaPath,
             alphaBackgroundVehicule: alphaBackgroundVehicule,
@@ -497,6 +521,7 @@ function emitMessage() {
             boolScene6: boolScene6,
             boolScene8: boolScene8,
             boolScene9: boolScene9,
+            vol: vol,
             alphaVehicule: alphaVehicule,
             alphaBackgroundVehicule: alphaBackgroundVehicule,
             maxSp: maxSp,
@@ -522,6 +547,7 @@ function emitMessage() {
             boolScene6: boolScene6,
             boolScene8: boolScene8,
             boolScene9: boolScene9,
+            vol: vol,
             alphaFFlines: alphaFFlines,
             alphaFFBackground: alphaFFBackground,
             maxSp: maxSp,
@@ -543,6 +569,7 @@ function emitMessage() {
             boolScene6: boolScene6,
             boolScene8: boolScene8,
             boolScene9: boolScene9,
+            vol: vol,
             alphaVehicule: alphaVehicule,
             alphaBackgroundVehicule: alphaBackgroundVehicule,
             alphaFFlines: alphaFFlines,
@@ -569,6 +596,7 @@ function emitMessage() {
             boolScene6: boolScene6,
             boolScene8: boolScene8,
             boolScene9: boolScene9,
+            vol: vol,
             alphaVehicule: alphaVehicule,
             alphaBackgroundVehicule: alphaBackgroundVehicule,
             alphaFFlines: alphaFFlines,
@@ -596,6 +624,7 @@ function emitMessage() {
             boolScene6: boolScene6,
             boolScene8: boolScene8,
             boolScene9: boolScene9,
+            vol: vol,
             alphaVehicule: alphaVehicule,
             alphaBackgroundVehicule: alphaBackgroundVehicule,
             maxSp: maxSp,
@@ -607,7 +636,8 @@ function emitMessage() {
             alignement: alignement,
             alphaVideo: alphaVideo,
             playWhiteNoiseSound: playWhiteNoiseSound,
-            playSound2: playSound2
+            playSound2: playSound2,
+            drawFood: drawFood
         };
 
         // Send that object to the socket
@@ -635,6 +665,9 @@ function startGUIscenes() {
         'boolScene7', 'boolScene8',
         'boolScene9', 'boolScene10'
     );
+
+    guiVolume = createGui('Volume Sound');
+    guiVolume.addGlobals('vol');
 }
 
 function StartGuiScene1() {
@@ -738,34 +771,7 @@ function scene1() {
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
 
-    if (playWhiteNoiseSound) {
-        if (go) {
-            userStartAudio();
-            go = true;
-            whiteNoise.loop();
-            whiteNoise2.loop();
-            go = false;
-        }
-        let vol = map(vehicleSound1.position.x, 0.01, w, 0, 1);
-        whiteNoise.setVolume(vol);
-
-        let vol2 = map(vehicleSound1.position.x, 0.01, w, 1, 0);
-        whiteNoise2.setVolume(vol2);
-
-        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
-        speed = constrain(speed, 0.001, 1);
-
-        whiteNoise.rate(speed);
-        whiteNoise2.rate(speed);
-
-        // let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
-        // whiteNoise.pan(panning);
-    }
-    else if (!playWhiteNoiseSound) {
-        go = true;
-        whiteNoise.pause();
-        whiteNoise2.pause();
-    }
+    goSound();
 
 }
 
@@ -783,34 +789,7 @@ function scene2() {
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
 
-    if (playWhiteNoiseSound) {
-        if (go) {
-            userStartAudio();
-            go = true;
-            whiteNoise.loop();
-            whiteNoise2.loop();
-            go = false;
-        }
-        let vol = map(vehicleSound1.position.x, 0.01, w, 0, 1);
-        whiteNoise.setVolume(vol);
-
-        let vol2 = map(vehicleSound1.position.x, 0.01, w, 1, 0);
-        whiteNoise2.setVolume(vol2);
-
-        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
-        speed = constrain(speed, 0.001, 1);
-
-        whiteNoise.rate(speed);
-        whiteNoise2.rate(speed);
-
-        // let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
-        // whiteNoise.pan(panning);
-    }
-    else if (!playWhiteNoiseSound) {
-        go = true;
-        whiteNoise.pause();
-        whiteNoise2.pause();
-    }
+    goSound();
 
 }
 
@@ -830,34 +809,7 @@ function scene3() {
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
 
-    if (playWhiteNoiseSound) {
-        if (go) {
-            userStartAudio();
-            go = true;
-            whiteNoise.loop();
-            whiteNoise2.loop();
-            go = false;
-        }
-        let vol = map(vehicleSound1.position.x, 0.01, w, 0, 1);
-        whiteNoise.setVolume(vol);
-
-        let vol2 = map(vehicleSound1.position.x, 0.01, w, 1, 0);
-        whiteNoise2.setVolume(vol2);
-
-        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
-        speed = constrain(speed, 0.001, 1);
-
-        whiteNoise.rate(speed);
-        whiteNoise2.rate(speed);
-
-        // let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
-        // whiteNoise.pan(panning);
-    }
-    else if (!playWhiteNoiseSound) {
-        go = true;
-        whiteNoise.pause();
-        whiteNoise2.pause();
-    }
+    goSound();
 
 }
 
@@ -871,26 +823,7 @@ function scene5() {
     ffGraphics.background(0, alphaFFBackground);
     image(ffGraphics, 0, 0, w, h);
 
-    if (playSound1) {
-        if (go) {
-            userStartAudio();
-            go = true;
-            song1.loop();
-            go = false;
-        }
-
-        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
-        speed = constrain(speed, 0.001, 1);
-
-        song1.rate(speed);
-
-        let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
-        song1.pan(panning);
-    }
-    else if (!playSound1) {
-        go = true;
-        song1.pause();
-    }
+    goSound();
 
 }
 
@@ -916,27 +849,8 @@ function scene6() {
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
 
-    // sound 2
-    if (playSound2) {
-        if (go) {
-            userStartAudio();
-            go = true;
-            song2.loop();
-            go = false;
-        }
+    goSound();
 
-        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
-        speed = constrain(speed, 0.001, 1);
-
-        song2.rate(speed);
-
-        let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
-        song2.pan(panning);
-    }
-    else if (!playSound2) {
-        go = true;
-        song2.pause();
-    }
 
 }
 
@@ -952,27 +866,7 @@ function scene8() {
     goShader();
     image(shaderGraphics, 0, 0, w, h);
 
-    // sound 2
-    if (playSound2) {
-        if (go) {
-            userStartAudio();
-            go = true;
-            song2.loop();
-            go = false;
-        }
-
-        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
-        speed = constrain(speed, 0.001, 1);
-
-        song2.rate(speed);
-
-        let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
-        song2.pan(panning);
-    }
-    else if (!playSound2) {
-        go = true;
-        song2.pause();
-    }
+    goSound();
 
 }
 
@@ -999,36 +893,7 @@ function scene9() {
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
 
-    // whitenoise
-    if (playWhiteNoiseSound) {
-        if (go) {
-            userStartAudio();
-            go = true;
-            whiteNoise.loop();
-            whiteNoise2.loop();
-            go = false;
-        }
-        let vol = map(vehicleSound1.position.x, 0.01, w, 0, 1);
-        whiteNoise.setVolume(vol);
-
-        let vol2 = map(vehicleSound1.position.x, 0.01, w, 1, 0);
-        whiteNoise2.setVolume(vol2);
-
-        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
-        speed = constrain(speed, 0.001, 1);
-
-        whiteNoise.rate(speed);
-        whiteNoise2.rate(speed);
-        song2.pause();
-
-        // let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
-        // whiteNoise.pan(panning);
-    }
-    else if (!playWhiteNoiseSound) {
-        go = true;
-        whiteNoise.pause();
-        whiteNoise2.pause();
-    }
+    goSound();
 
 }
 
@@ -1101,6 +966,81 @@ function goVehicleFF() {
     vehicleSound1.update(maxSp, maxFr);
     noFill();
     vehicleSound1.c[3] = alphaVehicule;
+}
+
+function goSound() {
+
+    if (playWhiteNoiseSound) {
+        if (go) {
+            userStartAudio();
+            go = true;
+            whiteNoise.loop();
+            go = false;
+        }
+        let volu = map(vehicleSound1.position.x, 0.01, w, 0, 1);
+
+        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
+        speed = constrain(speed, 0.001, 1);
+
+        whiteNoise.rate(speed);
+
+        let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
+        whiteNoise.pan(panning);
+
+        whiteNoise.setVolume(volu);
+    }
+    if (!playWhiteNoiseSound) {
+        go = true;
+        whiteNoise.stop();
+    }
+
+    if (playSound1) {
+        if (go) {
+            userStartAudio();
+            go = true;
+            song1.loop();
+            go = false;
+        }
+
+        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
+        speed = constrain(speed, 0.001, 1);
+
+        song1.rate(speed);
+
+        let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
+        song1.pan(panning);
+
+        song1.setVolume(vol);
+    }
+    if (!playSound1) {
+        go = true;
+        song1.stop();
+    }
+
+    // sound 2
+    if (playSound2) {
+        if (go) {
+            userStartAudio();
+            go = true;
+            song2.loop();
+            go = false;
+        }
+
+        let speed = map(vehicleSound1.position.y, 0.01, h, 2, 0);
+        speed = constrain(speed, 0.001, 1);
+
+        song2.rate(speed);
+
+        let panning = map(vehicleSound1.position.x, 0, w, -1.0, 1.0);
+        song2.pan(panning);
+        song2.setVolume(vol);
+
+    }
+    if (!playSound2) {
+        go = true;
+        song2.stop();
+    }
+
 }
 
 // function goVehiclePath(p) {
@@ -1482,13 +1422,13 @@ function transformVideoEvol() {
 
             rectMode(CENTER);
 
-            evoGraphics.rect(x * vScaleEVO, y * vScaleEVO, vScaleEVO - 10, vScaleEVO - 10);
+            evoGraphics.rect(x * vScaleEVO, y * vScaleEVO, vScaleEVO, vScaleEVO);
 
             if (drawFood) {
                 if (r < 40 && g < 40 && b < 40) {
-                    food.push(createVector(x * vScaleEVO + (vScaleEVO * 0.5) + 10, y * vScaleEVO + (vScaleEVO * 0.5) + 10));
+                    food.push(createVector(x * vScaleEVO + (vScaleEVO * 0.5), y * vScaleEVO + (vScaleEVO * 0.5)));
                 } else if (r > 200 && g > 200 && b > 200) {
-                    poison.push(createVector(x * vScaleEVO + (vScaleEVO * 0.5) + 10, y * vScaleEVO + (vScaleEVO * 0.5) + 10));
+                    poison.push(createVector(x * vScaleEVO + (vScaleEVO * 0.5), y * vScaleEVO + (vScaleEVO * 0.5)));
                 }
             }
 
