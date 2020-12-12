@@ -153,6 +153,8 @@ io.on('connection', (socket) => {
 
     });
 
+
+
     socket.on('volume', (data) => {
 
         socket.broadcast.emit('volume', data);
