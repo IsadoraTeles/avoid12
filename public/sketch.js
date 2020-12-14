@@ -1242,8 +1242,8 @@ function createGraphicss() {
     shaderGraphics = createGraphics(w, h, WEBGL);
     shaderGraphics.noStroke();
     shaderGraphics.clear();
-    // clientsGraphics = createGraphics(w, h);
-    // clientsGraphics.clear();
+    clientsGraphics = createGraphics(w, h);
+    clientsGraphics.clear();
 
 }
 
