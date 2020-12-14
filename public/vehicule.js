@@ -8,7 +8,7 @@ class Vehicle {
         this.radius = 6;
         this.maxspeed = ms || 1;
         this.maxforce = mf || 0.01;
-        this.c = [255, 255, 255, 255];
+        this.c = [random(0, 255), 255, 255, 255];
 
         this.history = [];
     }

@@ -127,7 +127,7 @@ let evoGraphics;
 let vehGraphics;
 let theShader;
 let shaderGraphics;
-// let clientsGraphics;
+let clientsGraphics;
 
 //////////////////////////////////////////////////////
 
@@ -403,15 +403,15 @@ function socketOnMessages() {
     }
 
 
-    // if (isHost) {
-    // socket.on('vehiculeUpdate', (data) => {
-    //     // data: id, xpos, ypos, mycolor
-    //     clientsGraphics.fill(255, 0, 0);
-    //     clientsGraphics.noStroke();
-    //     clientsGraphics.ellipse(data.x, data.y, 5, 5);
-    //     //print("client update");
-    // });
-    //}
+    if (isHost) {
+        socket.on('vehiculeUpdate', (data) => {
+            // data: id, xpos, ypos, mycolor
+            clientsGraphics.fill(color(data.c));
+            clientsGraphics.noStroke();
+            clientsGraphics.ellipse(data.x, data.y, 5, 5);
+            //print("client update");
+        });
+    }
 
     // Whenever the server emits 'login', log the login message
     socket.on('login', (data) => {
@@ -614,16 +614,17 @@ function emitMessage() {
         socket.emit('GUIupdate9', data);
     }
 
-    // if (isClient) {
-    //     var data = {
-    //         name: username,
-    //         x: vehicleSound1.position.x,
-    //         y: vehicleSound1.position.y,
-    //     };
+    if (isClient) {
+        var data = {
+            name: username,
+            x: vehicleSound1.position.x,
+            y: vehicleSound1.position.y,
+            c: vehicleSound1.c
+        };
 
-    //     // Send that object to the socket
-    //     socket.emit('vehiculeUpdate', data);
-    // }
+        // Send that object to the socket
+        socket.emit('vehiculeUpdate', data);
+    }
 }
 
 function startGUIscenes() {
@@ -736,8 +737,8 @@ function scene1() {
     goVehicleFF();
     blendMode(BLEND);
     background(0, alphaBackgroundVehicule);
-    // clientsGraphics.background(0, alphaBackgroundVehicule);
-    // image(clientsGraphics, 0, 0, w, h);
+    clientsGraphics.background(0, alphaBackgroundVehicule);
+    image(clientsGraphics, 0, 0, w, h);
     vehicleSound1.display();
 
     if (playWhiteNoiseSound) {
