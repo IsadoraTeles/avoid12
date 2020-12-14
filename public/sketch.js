@@ -127,7 +127,7 @@ let evoGraphics;
 let vehGraphics;
 let theShader;
 let shaderGraphics;
-let clientsGraphics;
+// let clientsGraphics;
 
 //////////////////////////////////////////////////////
 
@@ -404,13 +404,13 @@ function socketOnMessages() {
 
 
     // if (isHost) {
-    socket.on('vehiculeUpdate', (data) => {
-        // data: id, xpos, ypos, mycolor
-        clientsGraphics.fill(255);
-        clientsGraphics.noStroke();
-        clientsGraphics.ellipse(data.x, data.y, 5, 5);
-        //print("client update");
-    });
+    // socket.on('vehiculeUpdate', (data) => {
+    //     // data: id, xpos, ypos, mycolor
+    //     clientsGraphics.fill(255, 0, 0);
+    //     clientsGraphics.noStroke();
+    //     clientsGraphics.ellipse(data.x, data.y, 5, 5);
+    //     //print("client update");
+    // });
     //}
 
     // Whenever the server emits 'login', log the login message
@@ -614,16 +614,16 @@ function emitMessage() {
         socket.emit('GUIupdate9', data);
     }
 
-    if (isClient) {
-        var data = {
-            name: username,
-            x: vehicleSound1.position.x,
-            y: vehicleSound1.position.y,
-        };
+    // if (isClient) {
+    //     var data = {
+    //         name: username,
+    //         x: vehicleSound1.position.x,
+    //         y: vehicleSound1.position.y,
+    //     };
 
-        // Send that object to the socket
-        socket.emit('vehiculeUpdate', data);
-    }
+    //     // Send that object to the socket
+    //     socket.emit('vehiculeUpdate', data);
+    // }
 }
 
 function startGUIscenes() {
@@ -736,8 +736,8 @@ function scene1() {
     goVehicleFF();
     blendMode(BLEND);
     background(0, alphaBackgroundVehicule);
-    clientsGraphics.background(0, alphaBackgroundVehicule);
-    image(clientsGraphics, 0, 0, w, h);
+    // clientsGraphics.background(0, alphaBackgroundVehicule);
+    // image(clientsGraphics, 0, 0, w, h);
     vehicleSound1.display();
 
     if (playWhiteNoiseSound) {
@@ -782,8 +782,8 @@ function scene2() {
     noFill();
     vehicleSound1.c[3] = alphaVehicule;
 
-    clientsGraphics.background(0, alphaBackgroundVehicule);
-    image(clientsGraphics, 0, 0, w, h);
+    // clientsGraphics.background(0, alphaBackgroundVehicule);
+    // image(clientsGraphics, 0, 0, w, h);
 
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
@@ -832,8 +832,8 @@ function scene3() {
     vehGraphics.background(0, alphaFlockBackground);
     image(vehGraphics, 0, 0, w, h);
 
-    clientsGraphics.background(0, alphaBackgroundVehicule);
-    image(clientsGraphics, 0, 0, w, h);
+    // clientsGraphics.background(0, alphaBackgroundVehicule);
+    // image(clientsGraphics, 0, 0, w, h);
 
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
@@ -919,8 +919,8 @@ function scene6() {
 
     blendMode(BLEND);
 
-    clientsGraphics.background(0, alphaBackgroundVehicule);
-    image(clientsGraphics, 0, 0, w, h);
+    // clientsGraphics.background(0, alphaBackgroundVehicule);
+    // image(clientsGraphics, 0, 0, w, h);
 
     // vehicule
     goVehicleFF();
@@ -1006,8 +1006,8 @@ function scene9() {
 
     blendMode(BLEND);
 
-    clientsGraphics.background(0, alphaBackgroundVehicule);
-    image(clientsGraphics, 0, 0, w, h);
+    // clientsGraphics.background(0, alphaBackgroundVehicule);
+    // image(clientsGraphics, 0, 0, w, h);
 
     // vehicule
     background(0, alphaBackgroundVehicule);
@@ -1242,8 +1242,8 @@ function createGraphicss() {
     shaderGraphics = createGraphics(w, h, WEBGL);
     shaderGraphics.noStroke();
     shaderGraphics.clear();
-    clientsGraphics = createGraphics(w, h);
-    clientsGraphics.clear();
+    // clientsGraphics = createGraphics(w, h);
+    // clientsGraphics.clear();
 
 }
 
@@ -1452,11 +1452,11 @@ function goShader() {
     shaderGraphics.rect(0, 0, w, h);
 }
 
-function drawClients() {
-    clientsGraphics.background(0, alphaVehicule);
-    image(clientsGraphics, 0, 0, w, h);
+// function drawClients() {
+//     clientsGraphics.background(0, alphaVehicule);
+//     image(clientsGraphics, 0, 0, w, h);
 
-}
+// }
 
 function transformVideo() {
     scapture.loadPixels();

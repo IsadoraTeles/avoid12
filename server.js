@@ -161,9 +161,9 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('vehiculeUpdate', (data) => {
+    // socket.on('vehiculeUpdate', (data) => {
 
-        socket.broadcast.emit('vehiculeUpdate', data);
-    });
+    //     socket.broadcast.emit('vehiculeUpdate', data);
+    // });
 });
 
