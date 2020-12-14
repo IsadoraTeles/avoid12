@@ -404,14 +404,14 @@ function socketOnMessages() {
 
 
     // if (isHost) {
-    //     socket.on('vehiculeUpdate', (data) => {
-    //         // data: id, xpos, ypos, mycolor
-    //         clientsGraphics.fill(255);
-    //         clientsGraphics.noStroke();
-    //         clientsGraphics.ellipse(data.x, data.y, 5, 5);
-    //         //print("client update");
-    //     });
-    // }
+    socket.on('vehiculeUpdate', (data) => {
+        // data: id, xpos, ypos, mycolor
+        clientsGraphics.fill(255);
+        clientsGraphics.noStroke();
+        clientsGraphics.ellipse(data.x, data.y, 5, 5);
+        //print("client update");
+    });
+    //}
 
     // Whenever the server emits 'login', log the login message
     socket.on('login', (data) => {
@@ -614,16 +614,16 @@ function emitMessage() {
         socket.emit('GUIupdate9', data);
     }
 
-    // if (isClient) {
-    //     var data = {
-    //         name: username,
-    //         x: vehicleSound1.position.x,
-    //         y: vehicleSound1.position.y,
-    //     };
+    if (isClient) {
+        var data = {
+            name: username,
+            x: vehicleSound1.position.x,
+            y: vehicleSound1.position.y,
+        };
 
-    //     // Send that object to the socket
-    //     socket.emit('vehiculeUpdate', data);
-    // }
+        // Send that object to the socket
+        socket.emit('vehiculeUpdate', data);
+    }
 }
 
 function startGUIscenes() {
@@ -736,6 +736,8 @@ function scene1() {
     goVehicleFF();
     blendMode(BLEND);
     background(0, alphaBackgroundVehicule);
+    clientsGraphics.background(0, alphaBackgroundVehicule);
+    image(clientsGraphics, 0, 0, w, h);
     vehicleSound1.display();
 
     if (playWhiteNoiseSound) {
@@ -779,6 +781,9 @@ function scene2() {
     vehicleSound1.update(maxSp, maxFr);
     noFill();
     vehicleSound1.c[3] = alphaVehicule;
+
+    clientsGraphics.background(0, alphaBackgroundVehicule);
+    image(clientsGraphics, 0, 0, w, h);
 
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
@@ -826,6 +831,9 @@ function scene3() {
 
     vehGraphics.background(0, alphaFlockBackground);
     image(vehGraphics, 0, 0, w, h);
+
+    clientsGraphics.background(0, alphaBackgroundVehicule);
+    image(clientsGraphics, 0, 0, w, h);
 
     background(0, alphaBackgroundVehicule);
     vehicleSound1.display();
@@ -911,6 +919,9 @@ function scene6() {
 
     blendMode(BLEND);
 
+    clientsGraphics.background(0, alphaBackgroundVehicule);
+    image(clientsGraphics, 0, 0, w, h);
+
     // vehicule
     goVehicleFF();
     background(0, alphaBackgroundVehicule);
@@ -994,6 +1005,9 @@ function scene9() {
     image(vehGraphics, 0, 0, w, h);
 
     blendMode(BLEND);
+
+    clientsGraphics.background(0, alphaBackgroundVehicule);
+    image(clientsGraphics, 0, 0, w, h);
 
     // vehicule
     background(0, alphaBackgroundVehicule);
