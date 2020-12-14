@@ -403,15 +403,14 @@ function socketOnMessages() {
     }
 
 
-    if (isHost) {
-        socket.on('vehiculeUpdate', (data) => {
-            // data: id, xpos, ypos, mycolor
-            clientsGraphics.fill(color(data.c));
-            clientsGraphics.noStroke();
-            clientsGraphics.ellipse(data.x, data.y, 5, 5);
-            //print("client update");
-        });
-    }
+    socket.on('vehiculeUpdate', (data) => {
+        // data: id, xpos, ypos, mycolor
+        clientsGraphics.fill(color(data.c));
+        clientsGraphics.noStroke();
+        clientsGraphics.ellipse(data.x, data.y, 5, 5);
+        //print("client update");
+    });
+
 
     // Whenever the server emits 'login', log the login message
     socket.on('login', (data) => {
@@ -614,17 +613,17 @@ function emitMessage() {
         socket.emit('GUIupdate9', data);
     }
 
-    if (isClient) {
-        var data = {
-            name: username,
-            x: vehicleSound1.position.x,
-            y: vehicleSound1.position.y,
-            c: vehicleSound1.c
-        };
+    //if (isClient) {
+    var data = {
+        name: username,
+        x: vehicleSound1.position.x,
+        y: vehicleSound1.position.y,
+        c: vehicleSound1.c
+    };
 
-        // Send that object to the socket
-        socket.emit('vehiculeUpdate', data);
-    }
+    // Send that object to the socket
+    socket.emit('vehiculeUpdate', data);
+    //}
 }
 
 function startGUIscenes() {
